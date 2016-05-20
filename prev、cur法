@@ -1,0 +1,146 @@
+#define _CRT_SECURE_NO_WARNINGS 1
+#include<iostream>
+using namespace std;
+
+#include<assert.h>
+#include<stack>
+
+void Print(int* a, int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		cout << a[i] << "  ";
+	}
+	cout << endl;
+}
+
+
+//Number three middle large number 
+int mid(int* a, int left, int right)
+{
+	int mid = left - (left - right) / 2;
+	if (a[left] < a[right])
+	{
+		if (a[left] > a[mid])
+		{
+			return a[left];
+		}
+		else  
+		{
+			if (a[right] < a[mid])
+			{
+				return a[right];
+			}
+			else
+			{
+				return a[mid];
+			}
+		}
+	}
+	else
+	{
+		if (a[right] > a[mid])
+		{
+			return a[right];
+		}
+		else
+		{
+			if (a[left] < a[mid])
+			{
+				return a[left];
+			}
+			else
+			{
+				return a[mid];
+			}
+		}
+	}
+}
+
+
+int PartSort(int* a, int left, int right)
+{
+	assert(a);
+	int cur = left;
+	int prev = cur - 1;
+	int key = mid(a,left,right);
+	swap(key, a[right]);
+
+	while (cur < right)
+	{
+		if (a[cur] <= a[right])
+		{
+			swap(a[++prev], a[cur]);
+		}
+		cur++;
+	}
+	swap(a[++prev], a[right]);
+	
+	return prev;
+}
+
+
+//recursive 
+void QuickSort(int* a, int left, int right)
+{
+	int prev = PartSort(a,left, right);
+
+	if (prev - 1 > left)
+	{
+		QuickSort(a, left, prev - 1);
+	}
+
+	if (prev + 1 < right)
+	{
+		QuickSort(a, prev + 1, right);
+	}
+
+}
+
+
+//non-recursive 
+void QuickSort_NonR(int* a, int left, int right)
+{
+	stack<int> s;
+	s.push(left);
+	s.push(right);
+	while (!s.empty())
+	{
+		//[left,right]
+		int curRight = s.top();
+		s.pop();
+		int curLeft = s.top();
+		s.pop();
+		int prev = PartSort(a, curLeft, curRight);
+		if (prev - 1 > curLeft)
+		{
+			s.push(curLeft);
+			s.push(prev - 1);
+		}
+		if (prev + 1 < curRight)
+		{
+			s.push(prev + 1);
+			s.push(curRight);
+		}
+	}
+	
+	
+}
+
+
+void TestQuickSort()
+{
+	int a[] = { 12, 26, 33, 7, 5, 2, 4, 1, 16, 10, 2, 4, 4, 9 };
+	//QuickSort(a, 0, sizeof(a) / sizeof(a[0]) -1);
+	QuickSort_NonR(a, 0, sizeof(a) / sizeof(a[0]) - 1);
+
+	Print(a, sizeof(a) / sizeof(a[0]));
+}
+
+
+int main()
+{
+	TestQuickSort();
+	system("pause");
+	return 0;
+}
